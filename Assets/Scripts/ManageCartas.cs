@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class ManageCartas : MonoBehaviour
 {
     public GameObject cartaPrefab;
-    public GameObject[] cartasArray;
+    public GameObject[,] cartasArray;
     public int numeroCartas;
     public int numeroLinhas;
     int gameMode;
@@ -18,7 +20,9 @@ public class ManageCartas : MonoBehaviour
 
     bool timerPausado, timerAcionado;
     public float timer;
-    
+    public int numTentativas = 0;
+    public int numAcertos = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +33,7 @@ public class ManageCartas : MonoBehaviour
     void InicializarCartas()
     {
         GameObject centro = GameObject.Find("centroDaTela");
-        cartasArray = new GameObject[numeroCartas];
+        cartasArray = new GameObject[numeroLinhas, numeroCartas];
         
         for (int indiceVertical = 0; indiceVertical < numeroLinhas; indiceVertical++)
         {
@@ -49,7 +53,7 @@ public class ManageCartas : MonoBehaviour
                 var rank = arrayEmbaralhado[indiceHorizontal];
                 GameObject carta = CriarCarta(rank, indiceVertical, novaPosicao);
 
-                cartasArray[indiceHorizontal] = carta;
+                cartasArray[indiceVertical, indiceHorizontal] = carta;
             }
         }
     }
@@ -135,6 +139,13 @@ public class ManageCartas : MonoBehaviour
     void VerificaCartas()
     {
         DisparaTimer();
+        
+    }
+
+    private void UpdateTentativas()
+    {
+        numTentativas++;
+        GameObject.Find("numTentativas").GetComponent<Text>().text = "Tentativas = " + numTentativas;
     }
 
     private void DisparaTimer()
@@ -158,11 +169,17 @@ public class ManageCartas : MonoBehaviour
                 {
                     Destroy(carta1);
                     Destroy(carta2);
+                    numAcertos++;
+                    if(numAcertos == 13)
+                    {
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    }
                 }
                 else
                 {
                     carta1.GetComponent<Tile>().EscondeCarta();
                     carta2.GetComponent<Tile>().EscondeCarta();
+                    UpdateTentativas();
                 }
                 primeiraCartaSelecionada = false;
                 segundaCartaSelecionada = false;
