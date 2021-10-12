@@ -8,11 +8,15 @@ public class Tile : MonoBehaviour
     public Sprite originalCarta;
     public Sprite backCarta;
     private SpriteRenderer spriteRenderer;
+    public int cartaID;
+    public int linhaID;
+    private ManageCartas manager;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        manager = GetComponentInParent<ManageCartas>();
         EscondeCarta();
     }
 
@@ -25,14 +29,16 @@ public class Tile : MonoBehaviour
     public void OnMouseDown()
     {
         print("Voce pressionou uma tile");
-        if (tileRevelada)
+        /*if (tileRevelada)
         {
             EscondeCarta();
         }
         else
         {
             RevelaCarta();
-        }
+        }*/
+
+        manager.CartaSelecionada(gameObject);
     }
 
     public void EscondeCarta()
@@ -45,5 +51,10 @@ public class Tile : MonoBehaviour
     {
         spriteRenderer.sprite = originalCarta;
         tileRevelada = true;
+    }
+
+    public void setOriginalSprite(Sprite sprite)
+    {
+        originalCarta = sprite;
     }
 }
