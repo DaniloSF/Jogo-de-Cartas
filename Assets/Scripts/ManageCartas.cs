@@ -17,14 +17,14 @@ public class ManageCartas : MonoBehaviour
     public string backCor; //Cor da parte de tras da carta
     public int CorCarta; //Cor da carta relacionada ao naipe
 
-    /*  Qual tipo de jogo será jogado, 
+    /*  Qual tipo de jogo serï¿½ jogado, 
      * gamemode 0 = 2 Linhas e 2 naipes
      * gamemode 1 = 2 linhas e 1 naipe, dois decks diferentes
      * gamemode 2 = 4 linhas e 4 naipes, 4 cartas iguais
      */
     public int gameMode; 
 
-    public int cartasSelecionadas = 0b0000; //Binario que mantem conta das cartas selecionadas, primeira carta é o primeiro algarismo, segunda o segundo algarismo, etc
+    public int cartasSelecionadas = 0b0000; //Binario que mantem conta das cartas selecionadas, primeira carta ï¿½ o primeiro algarismo, segunda o segundo algarismo, etc
     public GameObject[] cartasSelecionadasArray; //Array para referenciar cartas selecionadas
 
     bool timerPausado, timerAcionado; //Delay para resolucao de acerto ou tentativa
@@ -37,11 +37,17 @@ public class ManageCartas : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameMode = PlayerPrefs.GetInt("gamemode", 2);
-        if(gameMode == 0 || gameMode == 2)
-        {
+
+        gameMode = PlayerPrefs.GetInt("gamemode", 1);
+        if(gameMode == 0)
+        { 
             CorCarta = PlayerPrefs.GetInt("corCarta", 0);
         }
+        else if(gameMode == 1)
+        {
+            naipeEscolhido = PlayerPrefs.GetString("naipeEscolhido", "clubs");
+        }
+        
         backCor = PlayerPrefs.GetString("backCor", "Red");
         ultimoJogo = PlayerPrefs.GetInt("Jogadas", 0);
         numeroLinhas = gameMode == 2 ? 4 : 2;
@@ -175,7 +181,7 @@ public class ManageCartas : MonoBehaviour
     public void CartaSelecionada(GameObject carta)
     {
         //print(cartasSelecionadas & 0b1);
-        if ((cartasSelecionadas & 1) == 0) //Equivalente = primeira carta não selecionada
+        if ((cartasSelecionadas & 1) == 0) //Equivalente = primeira carta nï¿½o selecionada
         {
             int linha = int.Parse(carta.name.Substring(0, 1));
             if(LinhasIguais(linha)) return;
@@ -183,7 +189,7 @@ public class ManageCartas : MonoBehaviour
             cartasSelecionadasArray[0] = carta;
             cartasSelecionadasArray[0].GetComponent<Tile>().RevelaCarta();
         }
-        else if((cartasSelecionadas & 0b11) == 0b01) //Equivalente = segunda carta não selecionada e os anteriores sim
+        else if((cartasSelecionadas & 0b11) == 0b01) //Equivalente = segunda carta nï¿½o selecionada e os anteriores sim
         {
             int linha = int.Parse(carta.name.Substring(0, 1));
             if (LinhasIguais(linha)) return;
@@ -195,7 +201,7 @@ public class ManageCartas : MonoBehaviour
                 VerificaCartas();
                 return;
             }
-        }else if(gameMode == 2 && (cartasSelecionadas & 0b111) == 0b011) //Equivalente = terceira carta não selecionada e os anteriores sim
+        }else if(gameMode == 2 && (cartasSelecionadas & 0b111) == 0b011) //Equivalente = terceira carta nï¿½o selecionada e os anteriores sim
         {
             int linha = int.Parse(carta.name.Substring(0, 1));
             if (LinhasIguais(linha)) return;
@@ -204,7 +210,7 @@ public class ManageCartas : MonoBehaviour
             print(cartasSelecionadas);
             cartasSelecionadasArray[2] = carta;
             cartasSelecionadasArray[2].GetComponent<Tile>().RevelaCarta();
-        }else if(gameMode == 2 && (cartasSelecionadas & 0b1111) == 0b0111) //Equivalente = quarta carta não selecionada e os anteriores sim
+        }else if(gameMode == 2 && (cartasSelecionadas & 0b1111) == 0b0111) //Equivalente = quarta carta nï¿½o selecionada e os anteriores sim
         {
             int linha = int.Parse(carta.name.Substring(0, 1));
             if (LinhasIguais(linha)) return;
