@@ -572,6 +572,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ManageCartas
       objectReference: {fileID: 0}
+    - target: {fileID: 8114463581534987027, guid: 9e1bc298a5511a54582c58088c64f2f9, type: 3}
+      propertyPath: gameMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8114463581534987028, guid: 9e1bc298a5511a54582c58088c64f2f9, type: 3}
       propertyPath: m_RootOrder
       value: 2
