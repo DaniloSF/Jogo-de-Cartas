@@ -33,9 +33,14 @@ public class ManageCartas : MonoBehaviour
     {
         gameMode = PlayerPrefs.GetInt("gamemode", 1);
         if(gameMode == 0)
-        {
-            gameMode = PlayerPrefs.GetInt("corCarta", 0);
+        { 
+            CorCarta = PlayerPrefs.GetInt("corCarta", 0);
         }
+        else if(gameMode == 1)
+        {
+            naipeEscolhido = PlayerPrefs.GetString("naipeEscolhido", "clubs");
+        }
+        
         backCor = PlayerPrefs.GetString("backCor", "Red");
         ultimoJogo = PlayerPrefs.GetInt("Jogadas", 0);
         numeroLinhas = gameMode == 2 ? 4 : numeroLinhas;
