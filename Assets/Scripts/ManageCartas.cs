@@ -10,35 +10,43 @@ public class ManageCartas : MonoBehaviour
 {
     public GameObject cartaPrefab; //Carta para se instanciar
     public GameObject[,] cartasArray; //Array/matrix para todas as cartas, separada por linha
-    const int maxRankCartas = 13;
-    public int numeroLinhas;
-    public int gameMode = 0;
-    public string naipeEscolhido;
-    public string backCor;
-    public int CorCarta;
+    const int maxRankCartas = 13; //Constante do numero de colunas e numero de ranks de cartas
+    public int numeroLinhas = 2; //Determina o numero de linhas de cartas
+    
+    public string naipeEscolhido; //Opcao de naipe para gamemode 1
+    public string backCor; //Cor da parte de tras da carta
+    public int CorCarta; //Cor da carta relacionada ao naipe
 
-    private bool primeiraCartaSelecionada, segundaCartaSelecionada;
-    private GameObject carta1, carta2;
-    private string linhaCarta1, linhaCarta2;
+    /*  Qual tipo de jogo será jogado, 
+     * gamemode 0 = 2 Linhas e 2 naipes
+     * gamemode 1 = 2 linhas e 1 naipe, dois decks diferentes
+     * gamemode 2 = 4 linhas e 4 naipes, 4 cartas iguais
+     */
+    public int gameMode; 
 
-    bool timerPausado, timerAcionado;
-    float timer;
-    int numTentativas = 0;
-    int numAcertos = 0;
+    public int cartasSelecionadas = 0b0000; //Binario que mantem conta das cartas selecionadas, primeira carta é o primeiro algarismo, segunda o segundo algarismo, etc
+    public GameObject[] cartasSelecionadasArray; //Array para referenciar cartas selecionadas
 
-    int ultimoJogo = 0;
+    bool timerPausado, timerAcionado; //Delay para resolucao de acerto ou tentativa
+    float timer; //contador do timer
+    int numTentativas = 0; //Mantem conta do numero de tentativas do player
+    int numAcertos = 0; //Mantem conta do numero de acertos do player
+
+    int ultimoJogo = 0; //Recorde de outros jogos
 
     // Start is called before the first frame update
     void Start()
     {
-        gameMode = PlayerPrefs.GetInt("gamemode", 1);
-        if(gameMode == 0)
+        gameMode = PlayerPrefs.GetInt("gamemode", 2);
+        if(gameMode == 0 || gameMode == 2)
         {
-            gameMode = PlayerPrefs.GetInt("corCarta", 0);
+            CorCarta = PlayerPrefs.GetInt("corCarta", 0);
         }
         backCor = PlayerPrefs.GetString("backCor", "Red");
         ultimoJogo = PlayerPrefs.GetInt("Jogadas", 0);
-        numeroLinhas = gameMode == 2 ? 4 : numeroLinhas;
+        numeroLinhas = gameMode == 2 ? 4 : 2;
+        cartasSelecionadasArray = new GameObject[numeroLinhas];
+
         GameObject.Find("ultimaJogada").GetComponent<Text>().text = "Jogo Anterior = " + ultimoJogo;
         InicializarCartas();
     }
@@ -132,7 +140,8 @@ public class ManageCartas : MonoBehaviour
                     nomeNaipe = (indiceVertical % 4 == 1 ? "diamonds" : "hearts");
                     nomeDaCarta = numeroCarta + nomeNaipe;
                 }
-                nomeBack += indiceVertical % 2 == 0 ? "Red" : "Blue";
+                carta.tag = "" + rank;
+                nomeBack += backCor;
                 break;
 
         }
@@ -165,22 +174,59 @@ public class ManageCartas : MonoBehaviour
 
     public void CartaSelecionada(GameObject carta)
     {
-        if (!primeiraCartaSelecionada)
+        //print(cartasSelecionadas & 0b1);
+        if ((cartasSelecionadas & 1) == 0) //Equivalente = primeira carta não selecionada
         {
-            string linha = carta.name.Substring(0, 1);
-            linhaCarta1 = linha;
-            primeiraCartaSelecionada = true;
-            carta1 = carta;
-            carta1.GetComponent<Tile>().RevelaCarta();
-        }else if(primeiraCartaSelecionada && !segundaCartaSelecionada)
+            int linha = int.Parse(carta.name.Substring(0, 1));
+            if(LinhasIguais(linha)) return;
+            cartasSelecionadas |= 0b1;
+            cartasSelecionadasArray[0] = carta;
+            cartasSelecionadasArray[0].GetComponent<Tile>().RevelaCarta();
+        }
+        else if((cartasSelecionadas & 0b11) == 0b01) //Equivalente = segunda carta não selecionada e os anteriores sim
         {
-            string linha = carta.name.Substring(0, 1);
-            if (linha == linhaCarta1) return;
-            linhaCarta2 = linha;
-            segundaCartaSelecionada = true;
-            carta2 = carta;
-            carta2.GetComponent<Tile>().RevelaCarta();
+            int linha = int.Parse(carta.name.Substring(0, 1));
+            if (LinhasIguais(linha)) return;
+            cartasSelecionadas |= 0b11;
+            cartasSelecionadasArray[1] = carta;
+            cartasSelecionadasArray[1].GetComponent<Tile>().RevelaCarta();
+            if (gameMode != 2)
+            {
+                VerificaCartas();
+                return;
+            }
+        }else if(gameMode == 2 && (cartasSelecionadas & 0b111) == 0b011) //Equivalente = terceira carta não selecionada e os anteriores sim
+        {
+            int linha = int.Parse(carta.name.Substring(0, 1));
+            if (LinhasIguais(linha)) return;
+            print(cartasSelecionadas);
+            cartasSelecionadas |= 0b111;
+            print(cartasSelecionadas);
+            cartasSelecionadasArray[2] = carta;
+            cartasSelecionadasArray[2].GetComponent<Tile>().RevelaCarta();
+        }else if(gameMode == 2 && (cartasSelecionadas & 0b1111) == 0b0111) //Equivalente = quarta carta não selecionada e os anteriores sim
+        {
+            int linha = int.Parse(carta.name.Substring(0, 1));
+            if (LinhasIguais(linha)) return;
+            cartasSelecionadas |= 0b1111;
+            cartasSelecionadasArray[3] = carta;
+            cartasSelecionadasArray[3].GetComponent<Tile>().RevelaCarta();
             VerificaCartas();
+        }
+
+        bool LinhasIguais(int linha)
+        {
+            print(linha);
+            print(cartasSelecionadasArray.Length);
+            for (int i = 0; i < cartasSelecionadasArray.Length; i++)
+            {
+                if (cartasSelecionadasArray[i] && cartasSelecionadasArray[i].GetComponent<Tile>().linhaID == linha)
+                {
+                    print(cartasSelecionadasArray[i].GetComponent<Tile>().linhaID == linha);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -213,48 +259,24 @@ public class ManageCartas : MonoBehaviour
             {
                 timerPausado = true;
                 timerAcionado = false;
-                switch (gameMode)
-                {
-                    case 0:
-                        MatchZero();
-                        break;
-                    case 1:
-                        if (carta1.tag == carta2.tag)
-                        {
-                            Destroy(carta1);
-                            Destroy(carta2);
-                            numAcertos++;
-                            if (numAcertos == maxRankCartas)
-                            {
-                                PlayerPrefs.SetInt("Jogadas", numTentativas);
-                                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                            }
-                        }
-                        else
-                        {
-                            carta1.GetComponent<Tile>().EscondeCarta();
-                            carta2.GetComponent<Tile>().EscondeCarta();
-                            UpdateTentativas();
-                        }
-                        primeiraCartaSelecionada = false;
-                        segundaCartaSelecionada = false;
-                        carta1 = null;
-                        carta2 = null;
-                        linhaCarta1 = "";
-                        linhaCarta2 = "";
-                        timer = 0;
-                        break;
-                }
+                Match();
+                
             }
         }
     }
 
-    private void MatchZero()
+    private void Match()
     {
-        if (carta1.tag == carta2.tag)
+        for (int i = 0; i < cartasSelecionadasArray.Length; i++)
         {
-            Destroy(carta1);
-            Destroy(carta2);
+
+        }
+        if (TagsIguais())
+        {
+            for (int i = 0; i < cartasSelecionadasArray.Length; i++)
+            {
+                if (cartasSelecionadasArray[i]) Destroy(cartasSelecionadasArray[i]);
+            }
             numAcertos++;
             if (numAcertos == maxRankCartas)
             {
@@ -264,17 +286,33 @@ public class ManageCartas : MonoBehaviour
         }
         else
         {
-            carta1.GetComponent<Tile>().EscondeCarta();
-            carta2.GetComponent<Tile>().EscondeCarta();
+            for (int i = 0; i < cartasSelecionadasArray.Length; i++)
+            {
+                if (cartasSelecionadasArray[i]) cartasSelecionadasArray[i].GetComponent<Tile>().EscondeCarta();
+            }
             UpdateTentativas();
         }
-        primeiraCartaSelecionada = false;
-        segundaCartaSelecionada = false;
-        carta1 = null;
-        carta2 = null;
-        linhaCarta1 = "";
-        linhaCarta2 = "";
+        cartasSelecionadas = 0;
+        for (int i = 0; i < cartasSelecionadasArray.Length; i++)
+        {
+            cartasSelecionadasArray[i] = null;
+        }
         timer = 0;
+
+        bool TagsIguais()
+        {
+            for (int i = 0; i < cartasSelecionadasArray.Length; i++)
+            {
+                if (cartasSelecionadasArray[i]
+                    && cartasSelecionadasArray[0].GetComponent<Tile>().tag != cartasSelecionadasArray[i].GetComponent<Tile>().tag)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
+
+
 
 }
