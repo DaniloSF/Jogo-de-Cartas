@@ -32,7 +32,7 @@ public class ManageCartas : MonoBehaviour
     int numTentativas = 0; //Mantem conta do numero de tentativas do player
     int numAcertos = 0; //Mantem conta do numero de acertos do player
 
-    int ultimoJogo = 0; //Recorde de outros jogos
+    int recorde = 0; //Recorde de outros jogos
 
     // Start is called before the first frame update
     void Start()
@@ -49,11 +49,11 @@ public class ManageCartas : MonoBehaviour
         }
         
         backCor = PlayerPrefs.GetString("backCor", "Red");
-        ultimoJogo = PlayerPrefs.GetInt("Jogadas", 0);
+        recorde = PlayerPrefs.GetInt("Recorde", 0);
         numeroLinhas = gameMode == 2 ? 4 : 2;
         cartasSelecionadasArray = new GameObject[numeroLinhas];
 
-        GameObject.Find("ultimaJogada").GetComponent<Text>().text = "Jogo Anterior = " + ultimoJogo;
+        GameObject.Find("ultimaJogada").GetComponent<Text>().text = "Recorde = " + recorde;
         InicializarCartas();
     }
 
@@ -287,7 +287,11 @@ public class ManageCartas : MonoBehaviour
             if (numAcertos == maxRankCartas)
             {
                 PlayerPrefs.SetInt("Jogadas", numTentativas);
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                if(numTentativas < recorde || recorde == 0)
+                {
+                    PlayerPrefs.SetInt("Recorde", numTentativas);
+                }
+                SceneManager.LoadScene("EndScreen");
             }
         }
         else
