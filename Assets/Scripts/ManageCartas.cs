@@ -8,37 +8,50 @@ using Random = UnityEngine.Random;
 
 public class ManageCartas : MonoBehaviour
 {
-    public GameObject cartaPrefab;
-    public GameObject[,] cartasArray;
-    public int numeroCartas;
+    public GameObject cartaPrefab; //Carta para se instanciar
+    public GameObject[,] cartasArray; //Array/matrix para todas as cartas, separada por linha
+    const int maxRankCartas = 13;
     public int numeroLinhas;
-    int gameMode;
+    public int gameMode = 0;
+    public string naipeEscolhido;
+    public string backCor;
+    public int CorCarta;
 
     private bool primeiraCartaSelecionada, segundaCartaSelecionada;
     private GameObject carta1, carta2;
     private string linhaCarta1, linhaCarta2;
 
     bool timerPausado, timerAcionado;
-    public float timer;
-    public int numTentativas = 0;
-    public int numAcertos = 0;
+    float timer;
+    int numTentativas = 0;
+    int numAcertos = 0;
+
+    int ultimoJogo = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameMode = PlayerPrefs.GetInt("gamemode");
+        gameMode = PlayerPrefs.GetInt("gamemode", 1);
+        if(gameMode == 0)
+        {
+            gameMode = PlayerPrefs.GetInt("corCarta", 0);
+        }
+        backCor = PlayerPrefs.GetString("backCor", "Red");
+        ultimoJogo = PlayerPrefs.GetInt("Jogadas", 0);
+        numeroLinhas = gameMode == 2 ? 4 : numeroLinhas;
+        GameObject.Find("ultimaJogada").GetComponent<Text>().text = "Jogo Anterior = " + ultimoJogo;
         InicializarCartas();
     }
 
     void InicializarCartas()
     {
         GameObject centro = GameObject.Find("centroDaTela");
-        cartasArray = new GameObject[numeroLinhas, numeroCartas];
+        cartasArray = new GameObject[numeroLinhas, maxRankCartas];
         
         for (int indiceVertical = 0; indiceVertical < numeroLinhas; indiceVertical++)
         {
             int[] arrayEmbaralhado = criaArrayEmbaralhado();
-            for (int indiceHorizontal = 0; indiceHorizontal < numeroCartas; indiceHorizontal++)
+            for (int indiceHorizontal = 0; indiceHorizontal < maxRankCartas; indiceHorizontal++)
             {
 
                 float escalaCartaOriginal = cartaPrefab.transform.localScale.x;
@@ -46,7 +59,7 @@ public class ManageCartas : MonoBehaviour
                 float fatorEscalaX = (650*escalaCartaOriginal)/ 110f;
                 float fatorEscalaY = (945*escalaCartaOriginal)/ 110f;
 
-                var novaPosicao = new Vector3(centro.transform.position.x + ((indiceHorizontal - ((numeroCartas-1) / 2f)) * fatorEscalaX),
+                var novaPosicao = new Vector3(centro.transform.position.x + ((indiceHorizontal - ((maxRankCartas - 1) / 2f)) * fatorEscalaX),
                                               centro.transform.position.y + ((indiceVertical - ((numeroLinhas - 1) / 2f)) * fatorEscalaY),
                                               centro.transform.position.z);
 
@@ -65,10 +78,13 @@ public class ManageCartas : MonoBehaviour
 
         carta.GetComponent<Tile>().cartaID = rank;
         carta.GetComponent<Tile>().linhaID = indiceVertical;
-        carta.tag = "" + rank;
+        
+        
         carta.name = indiceVertical + "_" + rank;
         string nomeDaCarta = "";
         string numeroCarta = "";
+        string nomeNaipe = "spades";
+        string nomeBack = "playCardBack";
         if (rank == 0)
             numeroCarta = "ace";
         else if (rank == 10)
@@ -79,26 +95,57 @@ public class ManageCartas : MonoBehaviour
             numeroCarta = "king";
         else
             numeroCarta = "" + (rank + 1);
+        numeroCarta += "_of_";
 
         switch (gameMode)
         {
             case 0:
-                nomeDaCarta = numeroCarta + (indiceVertical%2 == 0 ? "_of_clubs" : "_of_spades");
+                
+                if (CorCarta == 0)
+                {
+                    nomeNaipe = (indiceVertical % 2 == 0 ? "clubs" : "spades");
+                    nomeDaCarta = numeroCarta + nomeNaipe;
+                }
+                else
+                {
+                    nomeNaipe = (indiceVertical % 2 == 0 ? "diamonds" : "hearts");
+                    nomeDaCarta = numeroCarta + nomeNaipe;
+                    
+                }
+                carta.tag = "" + rank;
+                nomeBack += backCor;
                 break;
             case 1:
-                nomeDaCarta = numeroCarta + (indiceVertical%2 == 0 ? "_of_diamonds" : "_of_hearts");
+                nomeNaipe = naipeEscolhido;
+                nomeDaCarta = numeroCarta + nomeNaipe;
+                nomeBack += indiceVertical % 2 == 0 ? "Red" : "Blue";
+                carta.tag = "" + rank;
                 break;
             case 2:
-                nomeDaCarta = numeroCarta + (indiceVertical%2 == 0 ? "_of_clubs" : "_of_spades");
+                if(indiceVertical % 2 == 0)
+                {
+                    nomeNaipe = (indiceVertical % 4 == 0 ? "clubs" : "spades");
+                    nomeDaCarta = numeroCarta + nomeNaipe;
+                }
+                else
+                {
+                    nomeNaipe = (indiceVertical % 4 == 1 ? "diamonds" : "hearts");
+                    nomeDaCarta = numeroCarta + nomeNaipe;
+                }
+                nomeBack += indiceVertical % 2 == 0 ? "Red" : "Blue";
                 break;
 
         }
             
 
         Sprite s1 = Resources.Load<Sprite>("Sprites/cartas/" + nomeDaCarta);
+        Sprite b1 = Resources.Load<Sprite>("Sprites/cartas/" + nomeBack);
 
 
+        carta.GetComponent<Tile>().naipe = nomeNaipe;
         carta.GetComponent<Tile>().setOriginalSprite(s1);
+        carta.GetComponent<Tile>().setBackSprite(b1);
+
         return carta;
     }
 
@@ -106,10 +153,10 @@ public class ManageCartas : MonoBehaviour
     {
         int[] novaArray = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
         int temp;
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < maxRankCartas; i++)
         {
             temp = novaArray[i];
-            int r = Random.Range(temp, 13);
+            int r = Random.Range(temp, maxRankCartas);
             novaArray[i] = novaArray[r];
             novaArray[r] = temp;
         }
@@ -128,6 +175,7 @@ public class ManageCartas : MonoBehaviour
         }else if(primeiraCartaSelecionada && !segundaCartaSelecionada)
         {
             string linha = carta.name.Substring(0, 1);
+            if (linha == linhaCarta1) return;
             linhaCarta2 = linha;
             segundaCartaSelecionada = true;
             carta2 = carta;
@@ -165,32 +213,68 @@ public class ManageCartas : MonoBehaviour
             {
                 timerPausado = true;
                 timerAcionado = false;
-                if(carta1.tag == carta2.tag)
+                switch (gameMode)
                 {
-                    Destroy(carta1);
-                    Destroy(carta2);
-                    numAcertos++;
-                    if(numAcertos == 13)
-                    {
-                        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                    }
+                    case 0:
+                        MatchZero();
+                        break;
+                    case 1:
+                        if (carta1.tag == carta2.tag)
+                        {
+                            Destroy(carta1);
+                            Destroy(carta2);
+                            numAcertos++;
+                            if (numAcertos == maxRankCartas)
+                            {
+                                PlayerPrefs.SetInt("Jogadas", numTentativas);
+                                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                            }
+                        }
+                        else
+                        {
+                            carta1.GetComponent<Tile>().EscondeCarta();
+                            carta2.GetComponent<Tile>().EscondeCarta();
+                            UpdateTentativas();
+                        }
+                        primeiraCartaSelecionada = false;
+                        segundaCartaSelecionada = false;
+                        carta1 = null;
+                        carta2 = null;
+                        linhaCarta1 = "";
+                        linhaCarta2 = "";
+                        timer = 0;
+                        break;
                 }
-                else
-                {
-                    carta1.GetComponent<Tile>().EscondeCarta();
-                    carta2.GetComponent<Tile>().EscondeCarta();
-                    UpdateTentativas();
-                }
-                primeiraCartaSelecionada = false;
-                segundaCartaSelecionada = false;
-                carta1 = null;
-                carta2 = null;
-                linhaCarta1 = "";
-                linhaCarta2 = "";
-                timer = 0;
             }
         }
     }
 
-    
+    private void MatchZero()
+    {
+        if (carta1.tag == carta2.tag)
+        {
+            Destroy(carta1);
+            Destroy(carta2);
+            numAcertos++;
+            if (numAcertos == maxRankCartas)
+            {
+                PlayerPrefs.SetInt("Jogadas", numTentativas);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+        }
+        else
+        {
+            carta1.GetComponent<Tile>().EscondeCarta();
+            carta2.GetComponent<Tile>().EscondeCarta();
+            UpdateTentativas();
+        }
+        primeiraCartaSelecionada = false;
+        segundaCartaSelecionada = false;
+        carta1 = null;
+        carta2 = null;
+        linhaCarta1 = "";
+        linhaCarta2 = "";
+        timer = 0;
+    }
+
 }

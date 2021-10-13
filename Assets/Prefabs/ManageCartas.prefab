@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cartaPrefab: {fileID: 4191348231943546607, guid: 41f38f02150352549aac26c19bd6c6ef, type: 3}
-  cartasArray: []
-  numeroCartas: 13
   numeroLinhas: 2
+  gameMode: 1
+  naipeEscolhido: spades
+  backCor: 0
+  CorCarta: 0

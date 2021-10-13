@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,8 @@ public class Tile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     public int cartaID;
     public int linhaID;
-    private ManageCartas manager;
+    internal string naipe;
+    private static ManageCartas manager;
 
     // Start is called before the first frame update
     void Start()
@@ -56,5 +58,10 @@ public class Tile : MonoBehaviour
     public void setOriginalSprite(Sprite sprite)
     {
         originalCarta = sprite;
+    }
+
+    internal void setBackSprite(Sprite sprite)
+    {
+        backCarta = sprite;
     }
 }
