@@ -33,7 +33,7 @@ public class ManageBotoes : MonoBehaviour
                     changeDelay--;
                     if (changeDelay <= 0)
                     {
-                        SceneManager.LoadScene("Game");
+                        SceneManager.LoadScene("ModeSelection");
                     }
                     break;
                 case 2://Creditos
@@ -59,6 +59,7 @@ public class ManageBotoes : MonoBehaviour
     public void StartGame()//Acionar acao do botao para comecar o jogo
     {
         botao = 1;
+        changeDelay = 60;
     }
 
     public void MostrarCreditos()//Acionar acao do botao para mostrar os creditos
