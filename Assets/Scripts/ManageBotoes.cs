@@ -13,11 +13,7 @@ public class ManageBotoes : MonoBehaviour
     // 2 = MostrarCreditos
     // 3 = FecharJogo
     public int botao = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        PlayerPrefs.SetInt("score", 0);
-    }
+
 
     // Update is called once per frame
     void FixedUpdate()//Chamado uma vez por frame para que o timer seja constante nao importa a maquina do jogador

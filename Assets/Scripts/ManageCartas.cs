@@ -46,7 +46,7 @@ public class ManageCartas : MonoBehaviour
         /*
          * Ao dar start as configuracoes sao lidas e resources sao carregados
          */
-        gameMode = PlayerPrefs.GetInt("gamemode", 1);
+        gameMode = PlayerPrefs.GetInt("gamemode", 0);
         if(gameMode == 0)
         { 
             CorCarta = PlayerPrefs.GetInt("corCarta", 0);
