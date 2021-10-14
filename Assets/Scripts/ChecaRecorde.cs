@@ -18,14 +18,22 @@ public class ChecaRecorde : MonoBehaviour
 
         tentativas = PlayerPrefs.GetInt("Jogadas",0);
         recorde = PlayerPrefs.GetInt("Recorde",0);
+        AudioClip vitoria = Resources.Load<AudioClip>("Sounds/victory");
+        AudioClip ending = Resources.Load<AudioClip>("Sounds/end");
 
         if (tentativas >= recorde)
         {
             GameObject.Find("Text").GetComponent<Text>().text = "Fim de Jogo!";
+            GameObject.Find("music").GetComponent<AudioSource>().clip = ending;
+            GameObject.Find("music").GetComponent<AudioSource>().Play();
+            GameObject.Find("music").GetComponent<AudioSource>().loop = true;
         }
         else
         {
             GameObject.Find("Text").GetComponent<Text>().text = "Parabéns! Você é o novo recordista!!";
+            
+            GameObject.Find("music").GetComponent<AudioSource>().clip = vitoria;
+            GameObject.Find("music").GetComponent<AudioSource>().Play();
         }
          GameObject.Find("Tentativas").GetComponent<Text>().text += tentativas;
     }

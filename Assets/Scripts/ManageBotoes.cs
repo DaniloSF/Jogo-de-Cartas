@@ -46,7 +46,7 @@ public class ManageBotoes : MonoBehaviour
                 case 3: //Fechar execultavel
                     Application.Quit();
 
-                    //reseta o flag do botao para que nao repita o mesma coisa varios frames
+                    //reseta o flag do botao para que nao repita a mesma coisa varios frames
                     botao = 0; 
                     Debug.Log("Game is exiting");
                     break;

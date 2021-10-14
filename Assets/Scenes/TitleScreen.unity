@@ -372,7 +372,7 @@ GameObject:
   - component: {fileID: 787889913}
   - component: {fileID: 787889912}
   m_Layer: 0
-  m_Name: music intro forca
+  m_Name: music intro
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -388,7 +388,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: a798fd0698dc74447bc5a8c0f0a5a717, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 9b4c1a1f03128114a95d7141221fbbf2, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 52d23ed859fef1c45a755c7b7d3089a7, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -1010,7 +1010,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1016390078}
         m_TargetAssemblyTypeName: ManageBotoes, Assembly-CSharp
-        m_MethodName: FecharJogo
+        m_MethodName: MostrarCreditos
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1164,7 +1164,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: aebcae32031b8b14b9d23b4bc15544cf, type: 3}
+  m_audioClip: {fileID: 8300000, guid: a17cdeb0c8fa8544fa10aab6232544d0, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
