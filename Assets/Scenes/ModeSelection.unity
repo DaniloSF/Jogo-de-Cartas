@@ -4407,7 +4407,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1951923099}
         m_TargetAssemblyTypeName: ManageOptions, Assembly-CSharp
-        m_MethodName: SubOptionsChange
+        m_MethodName: backCorOptionsChange
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

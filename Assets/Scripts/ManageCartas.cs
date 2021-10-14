@@ -58,6 +58,7 @@ public class ManageCartas : MonoBehaviour
         
         backCor = PlayerPrefs.GetString("backCor", "Red");
         recorde = PlayerPrefs.GetInt("Recorde", 0);
+
         numeroLinhas = gameMode == 2 ? 4 : 2;
         cartasSelecionadasArray = new GameObject[numeroLinhas];
 

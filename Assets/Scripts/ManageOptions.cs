@@ -11,13 +11,7 @@ public class ManageOptions : MonoBehaviour
     /// </summary>
     public int changeDelay = 60;
     // 1 = cartas vermelhas
-    // 2 = cartas pretas
-    // 3 = naipe de paus
-    // 4 = naipe de espadas
-    // 5 = naipe de ouros
-    // 6 = naipe de copas
-    // 7 = baralho completo
-    public int botao = 0;
+    public bool botao = false;
 
     public string naipeEscolhido; //Opcao de naipe para gamemode 1
     public string backCor; //Cor da parte de tras da carta
@@ -77,9 +71,9 @@ public class ManageOptions : MonoBehaviour
     void FixedUpdate()//Chamado uma vez por frame para que o timer seja constante nao importa a maquina do jogador
     {
         /*
-        Dependendo do botao apertado muda as configuracoes necessarias e depois carrega a cena do jogo.
-        */
-        if (botao > 0)
+         *carrega a cena do jogo.
+            */
+        if (botao)
         {
             
             changeDelay--;
@@ -92,12 +86,19 @@ public class ManageOptions : MonoBehaviour
     }
 
     public void StartGame()//inicia o jogo com as opcoes selecionadas
-    {       
-        botao = 1;
+    {
+        /*
+         * Diz ao manager para comecar o timer e comecar o game
+         */
+    
+        botao = true;
     }
 
     public void SubOptionsChange()
     {
+        /*
+         * Ao mudar o gamemode as sub opcoes atualizao para mostrar as novas opcoes decorrentes no gamemode
+         */
         switch (optionsDropdown.value) 
         {
             case 0: //Um Baralho
@@ -152,11 +153,17 @@ public class ManageOptions : MonoBehaviour
 
     public void backCorOptionsChange()
     {
+        /*
+         * Atualiza as cores de tras das cartas 
+         */
         PlayerPrefs.SetString("backCor", backCorOptionsDropdown.value == 0 ? "Red" : "Blue");
     }
 
     private void AddNewOption(string newText)
     {
+        /*
+         * Adiciona um novo item na lista de opcoes com novo texto
+         */
         var data = new Dropdown.OptionData
         {
             text = newText
